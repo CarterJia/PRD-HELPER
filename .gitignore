@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+build/
+
+# Environment — NEVER commit API keys
+.env
+.env.local
+.env*.local
+
+# Superpowers brainstorm artifacts (mockups, server state)
+.superpowers/
+
+# Task materials (watermarked assignment images — keep out of the public repo)
+Screenshot*.png
+
+# OS / editor noise
+.DS_Store
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
