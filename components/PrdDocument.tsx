@@ -3,11 +3,13 @@
 import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { buildExportMarkdown, type DocMeta } from "@/lib/markdown";
+import { buildMetadataMarkdown, type DocMeta } from "@/lib/markdown";
+import type { Block } from "@/lib/edit";
 
 interface Props {
-  document: string;
+  blocks: Block[];
   meta: DocMeta;
+  highlightRange: { start: number; end: number } | null;
 }
 
 function Callout({ children }: { children?: ReactNode }) {
@@ -18,13 +20,30 @@ function Callout({ children }: { children?: ReactNode }) {
   );
 }
 
-export function PrdDocument({ document, meta }: Props) {
-  const full = buildExportMarkdown(meta, document);
+export function PrdDocument({ blocks, meta, highlightRange }: Props) {
   return (
-    <article className="prose prose-slate max-w-none prose-headings:scroll-mt-4 prose-table:text-sm">
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ blockquote: Callout }}>
-        {full}
-      </ReactMarkdown>
+    <article className="prose prose-slate max-w-none prose-table:text-sm">
+      {/* App-owned metadata header — NOT editable */}
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{buildMetadataMarkdown(meta)}</ReactMarkdown>
+
+      {/* Editable body: one wrapper per source block */}
+      <div data-prd-body>
+        {blocks.map((b, i) => {
+          const highlighted =
+            highlightRange && b.start >= highlightRange.start && b.end <= highlightRange.end;
+          return (
+            <div
+              key={b.start}
+              data-block-index={i}
+              className={highlighted ? "rounded bg-indigo-50 ring-2 ring-indigo-300" : undefined}
+            >
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ blockquote: Callout }}>
+                {b.text}
+              </ReactMarkdown>
+            </div>
+          );
+        })}
+      </div>
     </article>
   );
 }
