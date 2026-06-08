@@ -2,6 +2,7 @@ import { streamEdit } from "@/lib/claude";
 import type { EditRequest } from "@/lib/types";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function POST(req: Request): Promise<Response> {
   let body: Partial<EditRequest>;
