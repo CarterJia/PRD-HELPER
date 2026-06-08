@@ -23,3 +23,11 @@ export interface ParsedGeneration {
   document: string; // markdown PRD (everything before the trailer)
   meta: PrdMeta;    // parsed trailer; empty arrays if absent/malformed
 }
+
+/** Request body for POST /api/edit. */
+export interface EditRequest {
+  document: string;     // the model document body (state.document)
+  start: number;        // source offset of the span to replace
+  end: number;          // source offset (exclusive)
+  instruction: string;  // how to rewrite the span
+}
