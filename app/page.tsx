@@ -6,7 +6,7 @@ import { useGeneration } from "@/hooks/useGeneration";
 import type { DocMeta } from "@/lib/markdown";
 
 export default function Home() {
-  const { state, generate, refine } = useGeneration();
+  const { state, generate, refine, editSpan } = useGeneration();
 
   const onSubmit = (text: string) => {
     if (state.started) refine(text);
@@ -35,6 +35,7 @@ export default function Home() {
         isMockMode={state.isMockMode}
         isStreaming={state.isStreaming}
         started={state.started}
+        onEdit={editSpan}
       />
     </main>
   );
