@@ -32,3 +32,28 @@ describe("buildMessages", () => {
     expect(msgs[0].content).toContain("用户是大学生宿舍");
   });
 });
+
+import { buildEditSystemPrompt, buildEditMessages } from "./prompt";
+
+describe("buildEditSystemPrompt", () => {
+  it("instructs to rewrite ONLY the excerpt and output only markdown", () => {
+    const p = buildEditSystemPrompt();
+    expect(p).toContain("只重写");
+    expect(p).toContain("只输出");
+    expect(p).toContain("不要代码围栏");
+  });
+});
+
+describe("buildEditMessages", () => {
+  it("includes the full document, the excerpt, and the instruction", () => {
+    const msgs = buildEditMessages({
+      document: "## 1. TL;DR\n全文内容",
+      excerpt: "全文内容",
+      instruction: "更偏 B2B",
+    });
+    expect(msgs).toHaveLength(1);
+    expect(msgs[0].role).toBe("user");
+    expect(msgs[0].content).toContain("全文内容");
+    expect(msgs[0].content).toContain("更偏 B2B");
+  });
+});

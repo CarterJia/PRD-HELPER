@@ -65,3 +65,24 @@ export function buildMessages(req: GenerateRequest): ChatMessage[] {
   }
   return [{ role: "user", content }];
 }
+
+const EDIT_SYSTEM_PROMPT = `你在编辑一份产品需求文档(PRD)的某一段。下面会给你完整 PRD 作为上下文。
+
+要求:
+- **只重写**给定的「待修改片段」以满足用户指令。
+- 保持与该片段相同的 Markdown 结构与标题层级,并与全文风格一致。
+- **只输出**替换后的 Markdown 片段本身,不要复述其他部分,不要解释,不要代码围栏。
+- 若指令涉及假设,沿用 \`> 💡 假设:……\` 的写法;不要编造客观事实(人名/数字)。`;
+
+export function buildEditSystemPrompt(): string {
+  return EDIT_SYSTEM_PROMPT;
+}
+
+export function buildEditMessages(req: {
+  document: string;
+  excerpt: string;
+  instruction: string;
+}): ChatMessage[] {
+  const content = `完整 PRD(仅作上下文,不要整体重写):\n\n${req.document}\n\n---\n待修改片段:\n\n${req.excerpt}\n\n---\n修改指令:${req.instruction}`;
+  return [{ role: "user", content }];
+}
