@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { parseGeneration, stripMetaForDisplay } from "@/lib/parse";
+import { stripCodeFence } from "@/lib/edit";
 import type { Turn } from "@/lib/types";
 
 export interface ChatMessage {
@@ -140,5 +141,57 @@ export function useGeneration() {
     [run],
   );
 
-  return { state, generate, refine };
+  const editSpan = useCallback(
+    async (args: { document: string; start: number; end: number; instruction: string }) => {
+      const { document, start, end, instruction } = args;
+      const before = document.slice(0, start);
+      const after = document.slice(end);
+
+      setState((s) => ({ ...s, isStreaming: true, error: null }));
+
+      try {
+        const res = await fetch("/api/edit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ document, start, end, instruction }),
+        });
+        if (!res.ok || !res.body) throw new Error(`服务返回 ${res.status}`);
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let acc = "";
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          acc += decoder.decode(value, { stream: true });
+          setState((s) => ({ ...s, document: before + acc + after }));
+        }
+
+        regenRef.current += 1;
+        setState((s) => ({
+          ...s,
+          document: before + stripCodeFence(acc) + after,
+          version: `V0.${regenRef.current}`,
+          modifiedAt: nowStamp(),
+          isStreaming: false,
+          messages: [
+            ...s.messages,
+            { role: "assistant", content: `✏️ 已按「${instruction}」修改选中段落` },
+          ],
+        }));
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "编辑失败";
+        setState((s) => ({
+          ...s,
+          document, // roll back to pre-edit document
+          isStreaming: false,
+          error: msg,
+          messages: [...s.messages, { role: "assistant", content: `⚠️ 编辑出错:${msg}。已还原。` }],
+        }));
+      }
+    },
+    [],
+  );
+
+  return { state, generate, refine, editSpan };
 }
