@@ -9,6 +9,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("## 8. 待澄清问题");
     expect(p).toContain("[P0]");
     expect(p).toContain("💡 假设");
+    expect(p).toContain("[待填写]");
     expect(p).toContain("<<<PRD_META>>>");
     expect(p).toContain("<<<END_PRD_META>>>");
   });
