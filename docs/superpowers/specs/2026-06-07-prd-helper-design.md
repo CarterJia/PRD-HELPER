@@ -232,10 +232,11 @@ prd-helper/
 
 ---
 
-## 12. 参考资料(实现中持续补充)
+## 12. 参考资料
 
-- Anthropic Claude API 文档(Messages / Streaming)。
-- 业界 PRD 模板与最佳实践(用于 §4 结构设计,实现时附具体链接)。
-- ChatGPT Canvas / Claude Artifacts(布局 B 的交互参考)。
+- **Google NotebookLM** — 借鉴其"对话 + 文档工作区、人与 AI 围绕同一份文档协作精修"的交互范式;对应本项目左对话 / 右画布 + 双轨编辑。
+- **ChatGPT Canvas / Claude Artifacts** — 布局 B(文档画布)的交互参考。
+- **Anthropic Claude API**(Messages / Streaming)、Next.js、react-markdown —— 所用核心工具 / 文档。
+- 本项目**从零实现**,未基于某开源脚手架改造。
 
-> 实现过程中如参考了具体开源项目 / 文章,在此按"链接 + 参考了什么"补全,作为交付物之一。
+> 面向考官的参考清单见 README「参考与致谢」。
